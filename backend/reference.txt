@@ -2,3 +2,12 @@
     username : anandh
     password : 143Aj250
 
+database:
+    Neon - (PostgreSQL)
+    Cloudinary storage
+
+server: 
+    Render - (Django)
+
+frontend: 
+    Vercel - (React)
