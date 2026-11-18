@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import ProfilePage from './ProfilePage'
+import api from './api'
 
 function MyApplicationsPage() {
   const location = useLocation()
@@ -21,17 +22,14 @@ function MyApplicationsPage() {
 
     async function loadApplications() {
       try {
-        const response = await fetch('http://127.0.0.1:8000/applications', {
+        const { data } = await api.get('/applications', {
           headers: { Authorization: `Token ${authToken}` },
           signal: controller.signal,
         })
-        if (!response.ok) {
-          throw new Error('Could not load your applications. Please try again.')
-        }
-        setApplications(await response.json())
-      } catch (requestError) {
-        if (requestError.name !== 'AbortError') {
-          setError(requestError.message)
+        setApplications(data)
+      } catch {
+        if (!controller.signal.aborted) {
+          setError('Could not load your applications. Please try again.')
         }
       } finally {
         if (!controller.signal.aborted) {

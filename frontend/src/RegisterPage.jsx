@@ -1,18 +1,19 @@
 import React from 'react'
 import { useActionState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import api from './api'
 
 async function registerAction(_, formData) {
     const json = Object.fromEntries(formData);
-    const res = await fetch('http://127.0.0.1:8000/register', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(json)
-    });
-    const data = await res.json()
-    return { message: data.message || 'Registration failed', success: res.ok }
+    try {
+        const { data } = await api.post('/register', json)
+        return { message: data.message || 'Registration failed', success: true }
+    } catch (requestError) {
+        return {
+            message: requestError.response?.data?.message || 'Registration failed',
+            success: false,
+        }
+    }
 }
 
 function RegisterPage() {

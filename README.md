@@ -67,7 +67,13 @@ npm install
 npm run dev
 ```
 
-Vite prints the local frontend URL when the development server starts. The frontend expects the Django API at `http://127.0.0.1:8000`.
+Vite prints the local frontend URL when the development server starts. The API base URL is configured in `frontend/.env`:
+
+```env
+VITE_API_BASE_URL=https://jop-portal-qiy2.onrender.com
+```
+
+For local backend development, set it to `http://127.0.0.1:8000` instead. For a Vercel deployment, add `VITE_API_BASE_URL` under **Project Settings → Environment Variables** and redeploy; Vite embeds environment values at build time.
 
 To build or lint the frontend:
 

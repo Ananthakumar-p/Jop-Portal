@@ -2,6 +2,7 @@ import { useActionState, useState } from 'react';
 import { NavLink, useParams } from 'react-router-dom'
 import LoginPrompt from './LoginPrompt'
 import ProfilePage from './ProfilePage'
+import api from './api'
 
 
 
@@ -27,30 +28,26 @@ function ApplyJobPage() {
         if (!token) {
             return { message: 'Please log in before applying.', success: false, loginRequired: true }
         }
-        const res = await fetch('http://127.0.0.1:8000/apply', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Token ${token}`,
-            },
-            body: JSON.stringify({
-                job: jobId,
+        try {
+            const { data } = await api.post('/apply', { job: jobId }, {
+                headers: { Authorization: `Token ${token}` },
             })
-        });
-
-        const data = await res.json();
-        if (res.status === 401) {
-            localStorage.removeItem('authToken')
-            localStorage.removeItem('userId')
-            localStorage.removeItem('username')
-            setAuthToken(null)
-            setShowLoginPrompt(true)
-            return { message: data.detail || 'Please log in before applying.', success: false }
-        }
-        if(res.ok){
             return { message: data.message, success: true }
+        } catch (requestError) {
+            const data = requestError.response?.data
+            if (requestError.response?.status === 401) {
+                localStorage.removeItem('authToken')
+                localStorage.removeItem('userId')
+                localStorage.removeItem('username')
+                setAuthToken(null)
+                setShowLoginPrompt(true)
+                return { message: data?.detail || 'Please log in before applying.', success: false }
+            }
+            return {
+                message: data?.message || 'Could not submit your application.',
+                success: false,
+            }
         }
-        return { message: data.message || 'Could not submit your application.', success: false }
     }
 
   return (

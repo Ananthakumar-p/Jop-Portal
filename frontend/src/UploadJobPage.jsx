@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import LoginPrompt from './LoginPrompt'
 import ProfilePage from './ProfilePage'
+import api from './api'
 
 function UploadJobPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -33,17 +34,13 @@ function UploadJobPage() {
 
     setIsSubmitting(true)
     try {
-      const response = await fetch('http://127.0.0.1:8000/jobs/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Token ${authToken}`,
-        },
-        body: JSON.stringify(job),
+      await api.post('/jobs/create', job, {
+        headers: { Authorization: `Token ${authToken}` },
       })
-      const data = await response.json()
 
-      if (response.status === 401) {
+      navigate('/companies', { state: { message: 'Your job was posted successfully.' } })
+    } catch (requestError) {
+      if (requestError.response?.status === 401) {
         localStorage.removeItem('authToken')
         localStorage.removeItem('userId')
         localStorage.removeItem('username')
@@ -52,19 +49,14 @@ function UploadJobPage() {
         return
       }
 
-      if (!response.ok) {
-        const message = typeof data === 'object'
-          ? Object.entries(data).map(([field, messages]) => {
-            const detail = Array.isArray(messages) ? messages.join(', ') : String(messages)
-            return `${field}: ${detail}`
-          }).join(' ')
-          : 'Could not post this job.'
-        throw new Error(message || 'Could not post this job.')
-      }
-
-      navigate('/companies', { state: { message: 'Your job was posted successfully.' } })
-    } catch (requestError) {
-      setError(requestError.message || 'Could not post this job. Please try again.')
+      const data = requestError.response?.data
+      const message = data && typeof data === 'object'
+        ? Object.entries(data).map(([field, messages]) => {
+          const detail = Array.isArray(messages) ? messages.join(', ') : String(messages)
+          return `${field}: ${detail}`
+        }).join(' ')
+        : 'Could not post this job.'
+      setError(message || 'Could not post this job. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

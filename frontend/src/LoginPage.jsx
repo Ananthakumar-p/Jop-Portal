@@ -1,22 +1,21 @@
 import { useActionState, useEffect } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import api from './api'
 
 async function loginAction(_, formData) {
     const json = Object.fromEntries(formData);
-    const res = await fetch('http://127.0.0.1:8000/login', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(json)
-    });
-    const data = await res.json()
-    if (res.ok) {
+    try {
+        const { data } = await api.post('/login', json)
         localStorage.setItem('userId', data.user_id)
         localStorage.setItem('username', data.username)
         localStorage.setItem('authToken', data.token)
+        return { message: data.message || 'Login failed', success: true }
+    } catch (requestError) {
+        return {
+            message: requestError.response?.data?.message || 'Login failed',
+            success: false,
+        }
     }
-    return { message: data.message || 'Login failed', success: res.ok }
 }
 
 function LoginPage() {

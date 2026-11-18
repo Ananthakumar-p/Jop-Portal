@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import api from './api'
 
 function LogoutButton() {
   const [error, setError] = useState('')
@@ -11,12 +12,15 @@ function LogoutButton() {
 
     try {
       if (token) {
-        const response = await fetch('http://127.0.0.1:8000/logout', {
-          method: 'POST',
-          headers: { Authorization: `Token ${token}` },
-        })
-        if (!response.ok && response.status !== 401) {
-          throw new Error('Could not sign out. Please try again.')
+        try {
+          await api.post('/logout', null, {
+            headers: { Authorization: `Token ${token}` },
+          })
+        } catch (requestError) {
+          if (requestError.response?.status !== 401) {
+          setError('Could not sign out. Please try again.')
+          return
+          }
         }
       }
 

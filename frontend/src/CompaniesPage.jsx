@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import ProfilePage from './ProfilePage'
+import api from './api'
 
 const employmentLabels = {
   full_time: 'Full time',
@@ -90,16 +91,11 @@ function CompaniesPage() {
 
     async function loadCompanies() {
       try {
-        const response = await fetch('http://127.0.0.1:8000/companies', {
-          signal: controller.signal,
-        })
-        if (!response.ok) {
-          throw new Error('Could not load companies. Please try again.')
-        }
-        setCompanies(await response.json())
-      } catch (requestError) {
-        if (requestError.name !== 'AbortError') {
-          setError(requestError.message)
+        const { data } = await api.get('/companies', { signal: controller.signal })
+        setCompanies(data)
+      } catch {
+        if (!controller.signal.aborted) {
+          setError('Could not load companies. Please try again.')
         }
       } finally {
         if (!controller.signal.aborted) {

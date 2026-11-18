@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import LogoutButton from './LogoutButton'
+import api from './api'
 
 function ProfilePage() {
   const location = useLocation()
@@ -39,23 +40,19 @@ function ProfilePage() {
 
     async function loadProfile() {
       try {
-        const response = await fetch('http://127.0.0.1:8000/profile', {
+        const { data } = await api.get('/profile', {
           headers: { Authorization: `Token ${authToken}` },
           signal: controller.signal,
         })
-        const data = await response.json()
-
-        if (response.status === 401) {
-          clearLogin()
-          throw new Error('Your login expired. Please sign in again.')
-        }
-        if (!response.ok) {
-          throw new Error(data.detail || 'Could not load your profile.')
-        }
         setProfile(data)
       } catch (requestError) {
-        if (requestError.name !== 'AbortError') {
-          setError(requestError.message)
+        if (!controller.signal.aborted) {
+          if (requestError.response?.status === 401) {
+            clearLogin()
+            setError('Your login expired. Please sign in again.')
+          } else {
+            setError(requestError.response?.data?.detail || 'Could not load your profile.')
+          }
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -77,27 +74,24 @@ function ProfilePage() {
     setIsUploading(true)
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/profile/resume', {
-        method: 'POST',
+      const { data } = await api.post('/profile/resume', formData, {
         headers: { Authorization: `Token ${authToken}` },
-        body: formData,
       })
-      const data = await response.json()
-
-      if (response.status === 401) {
-        clearLogin()
-        throw new Error('Your login expired. Please sign in again.')
-      }
-      if (!response.ok) {
-        const detail = data.resume
-        throw new Error(Array.isArray(detail) ? detail.join(', ') : detail || 'Could not upload your resume.')
-      }
 
       setProfile((currentProfile) => ({ ...currentProfile, ...data }))
       setMessage(data.message)
       form.reset()
     } catch (requestError) {
-      setError(requestError.message || 'Could not upload your resume.')
+      if (requestError.response?.status === 401) {
+        clearLogin()
+        setError('Your login expired. Please sign in again.')
+      } else {
+        const data = requestError.response?.data
+        const detail = data?.resume
+        setError(Array.isArray(detail)
+          ? detail.join(', ')
+          : detail || data?.detail || 'Could not upload your resume.')
+      }
     } finally {
       setIsUploading(false)
     }
@@ -107,19 +101,12 @@ function ProfilePage() {
     setError('')
     setIsDownloading(true)
     try {
-      const response = await fetch('http://127.0.0.1:8000/profile/resume', {
+      const { data } = await api.get('/profile/resume', {
         headers: { Authorization: `Token ${authToken}` },
+        responseType: 'blob',
       })
-      if (response.status === 401) {
-        clearLogin()
-        throw new Error('Your login expired. Please sign in again.')
-      }
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.detail || 'Could not download your resume.')
-      }
 
-      const fileUrl = URL.createObjectURL(await response.blob())
+      const fileUrl = URL.createObjectURL(data)
       const downloadLink = document.createElement('a')
       downloadLink.href = fileUrl
       downloadLink.download = profile.resume_name
@@ -128,7 +115,12 @@ function ProfilePage() {
       downloadLink.remove()
       window.setTimeout(() => URL.revokeObjectURL(fileUrl), 1000)
     } catch (requestError) {
-      setError(requestError.message || 'Could not download your resume.')
+      if (requestError.response?.status === 401) {
+        clearLogin()
+        setError('Your login expired. Please sign in again.')
+      } else {
+        setError(requestError.response?.data?.detail || 'Could not download your resume.')
+      }
     } finally {
       setIsDownloading(false)
     }
