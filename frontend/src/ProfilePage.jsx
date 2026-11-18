@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import LogoutButton from './LogoutButton'
 
 function ProfilePage() {
+  const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
   const [authToken, setAuthToken] = useState(localStorage.getItem('authToken'))
   const [profile, setProfile] = useState(null)
@@ -201,6 +202,7 @@ function ProfilePage() {
                   <p className="mt-2 text-sm text-slate-500">Your account, resume, and notifications are private.</p>
                   <NavLink
                     to="/login"
+                    state={{ from: location }}
                     onClick={() => setIsOpen(false)}
                     className="mt-4 inline-flex rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800"
                   >

@@ -32,9 +32,9 @@ function RegisterPage() {
     {/* <!-- ================= HEADER ================= --> */}
     <header className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="text-2xl font-bold text-blue-700">
+            <NavLink to="/" className="text-2xl font-bold text-blue-700">
                 JobPortal
-            </div>
+            </NavLink>
 
             <nav className="hidden md:flex gap-6 text-sm font-medium text-gray-700">
                 <a href="#" className="hover:text-blue-700">Jobs</a>

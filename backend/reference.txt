@@ -1,0 +1,4 @@
+/admine
+    username : anandh
+    password : 143Aj250
+

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import ProfilePage from './ProfilePage'
 
 function MyApplicationsPage() {
+  const location = useLocation()
   const [applications, setApplications] = useState([])
   const [statusFilter, setStatusFilter] = useState('all')
   const [search, setSearch] = useState('')
@@ -98,24 +99,26 @@ function MyApplicationsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-          <h1 className="text-xl font-bold text-blue-700">JobPortal</h1>
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-4 sm:flex-row">
+          <NavLink to="/" className="text-xl font-extrabold tracking-tight text-blue-700">
+            JobPortal<span className="text-blue-400">.</span>
+          </NavLink>
 
-          <nav className="hidden gap-6 text-sm font-medium text-gray-700 md:flex">
+          <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm font-medium text-gray-700 sm:gap-6">
             <NavLink to="/job" className="hover:text-blue-700">Jobs</NavLink>
             <NavLink to="/companies" className="hover:text-blue-700">Companies</NavLink>
-            {authToken && <NavLink to="/applications" className="text-blue-700">My Applications</NavLink>}
+            <NavLink to="/applications" className="text-blue-700">My Applications</NavLink>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {authToken ? (
               <>
-                <span className="text-sm text-gray-600">Hello, {username}</span>
+                <span className="hidden text-sm text-slate-600 sm:block">Hello, {username}</span>
                 <ProfilePage />
               </>
             ) : (
-              <NavLink to="/login" className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">
+              <NavLink to="/login" state={{ from: location }} className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800">
                 Back to login
               </NavLink>
             )}
@@ -206,7 +209,7 @@ function MyApplicationsPage() {
               <div className="p-10 text-center">
                 <h3 className="font-semibold">Sign in to see your applications</h3>
                 <p className="mt-2 text-sm text-slate-500">Your applications will appear here after you log in.</p>
-                <NavLink to="/login" className="mt-4 inline-block text-sm font-semibold text-blue-700 hover:underline">
+                <NavLink to="/login" state={{ from: location }} className="mt-4 inline-block text-sm font-semibold text-blue-700 hover:underline">
                   Go to login
                 </NavLink>
               </div>

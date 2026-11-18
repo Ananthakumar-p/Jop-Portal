@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import ProfilePage from './ProfilePage'
 
 const employmentLabels = {
@@ -18,6 +18,7 @@ function formatDate(value) {
 }
 
 function JobListPage() {
+  const location = useLocation()
   const [jobs, setJobs] = useState([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
@@ -62,18 +63,16 @@ function JobListPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <NavLink to="/job" className="text-xl font-extrabold tracking-tight text-blue-700">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-4 sm:flex-row">
+          <NavLink to="/" className="text-xl font-extrabold tracking-tight text-blue-700">
             JobPortal<span className="text-blue-400">.</span>
           </NavLink>
-          <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-            <NavLink to="/job" className="text-blue-700">Find jobs</NavLink>
+          <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm font-medium sm:gap-6">
+            <NavLink to="/job" className="text-blue-700">Jobs</NavLink>
             <NavLink to="/companies" className="text-slate-500 transition hover:text-blue-700">Companies</NavLink>
-            {isLoggedIn && (
-              <NavLink to="/applications" className="text-slate-500 transition hover:text-blue-700">
-                My applications
-              </NavLink>
-            )}
+            <NavLink to="/applications" className="text-slate-500 transition hover:text-blue-700">
+              My Applications
+            </NavLink>
           </nav>
           {isLoggedIn ? (
             <div className="flex items-center gap-3">
@@ -81,7 +80,7 @@ function JobListPage() {
               <ProfilePage />
             </div>
           ) : (
-            <NavLink to="/login" className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800">
+            <NavLink to="/login" state={{ from: location }} className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800">
               Back to login
             </NavLink>
           )}

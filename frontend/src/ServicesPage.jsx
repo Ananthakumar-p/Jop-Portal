@@ -9,7 +9,7 @@ function ServicesPage() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <NavLink to="/services" className="text-xl font-extrabold tracking-tight text-blue-700">
+          <NavLink to="/" className="text-xl font-extrabold tracking-tight text-blue-700">
             JobPortal<span className="text-blue-400">.</span>
           </NavLink>
           <nav className="flex items-center gap-5 text-sm font-medium sm:gap-6">

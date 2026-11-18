@@ -1,5 +1,5 @@
 import { useActionState, useEffect } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 async function loginAction(_, formData) {
     const json = Object.fromEntries(formData);
@@ -26,6 +26,13 @@ function LoginPage() {
         });
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const isLoggedIn = Boolean(localStorage.getItem('authToken'));
+    const previousPage = location.state?.from;
+    const backPath = previousPage
+        ? `${previousPage.pathname}${previousPage.search || ''}${previousPage.hash || ''}`
+        : '/job';
+
     useEffect(() => {
         if (result.success) navigate('/services')
     }, [navigate, result])
@@ -35,9 +42,9 @@ function LoginPage() {
         {/* <!-- ================= HEADER ================= --> */}
         <header className="bg-white border-b">
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                <div className="text-2xl font-bold text-blue-700">
+                <NavLink to="/" className="text-2xl font-bold text-blue-700">
                     JobPortal
-                </div>
+                </NavLink>
 
                 <nav className="flex flex-wrap justify-end gap-3 text-xs font-medium text-gray-700 sm:gap-6 sm:text-sm">
                     <NavLink to="/job" className="hover:text-blue-700">Jobs</NavLink>
@@ -50,6 +57,15 @@ function LoginPage() {
 
         {/* <!-- ================= MAIN ================= --> */}
         <main className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 gap-10">
+            {!isLoggedIn && (
+                <button
+                    type="button"
+                    onClick={() => navigate(backPath)}
+                    className="col-span-full w-fit rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                >
+                    ← Back
+                </button>
+            )}
             {/* <!-- LEFT INFO --> */}
             <section className="hidden md:block">
                 <h1 className="text-3xl font-bold leading-snug">
@@ -71,9 +87,9 @@ function LoginPage() {
             <section className="w-full max-w-md mx-auto rounded-lg border bg-white p-8 md:border-0 md:bg-transparent md:p-0">
 
                 {/* <!-- Logo / Title --> */}
-                <h1 className="text-2xl font-bold text-blue-700 text-center">
+                <NavLink to="/" className="block text-2xl font-bold text-blue-700 text-center">
                     JobPortal
-                </h1>
+                </NavLink>
                 <p className="text-sm text-gray-500 text-center mt-1">
                     Login to your account
                 </p>

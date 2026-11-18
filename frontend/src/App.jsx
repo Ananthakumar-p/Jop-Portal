@@ -7,6 +7,7 @@ import MyApplicationsPage from './MyApplicationsPage'
 import CompaniesPage from './CompaniesPage'
 import ServicesPage from './ServicesPage'
 import UploadJobPage from './UploadJobPage'
+import HomePage from './HomePage'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
     <>
       <BrowserRouter>
       <Routes>
+        <Route path='/' element={<HomePage/>} />
         <Route path='/register' element={<RegisterPage/>} />
         <Route path='/login' element={<LoginPage/>} />
         <Route path='/job' element={<JobListPage/>} />
