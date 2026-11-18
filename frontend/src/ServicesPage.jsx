@@ -38,7 +38,7 @@ function ServicesPage() {
               Looking for your next opportunity or ready to find great talent? Choose a service to get started.
             </p>
           </div>
-          <div aria-hidden="true" className="absolute -right-10 -top-20 h-72 w-72 rounded-full border-[40px] border-white/10" />
+          <div aria-hidden="true" className="absolute -right-10 -top-20 h-72 w-72 rounded-full border-40 border-white/10" />
           <div aria-hidden="true" className="absolute -bottom-28 right-40 h-56 w-56 rounded-full bg-cyan-300/10 blur-2xl" />
         </section>
 
